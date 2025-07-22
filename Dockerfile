@@ -21,6 +21,21 @@ RUN npm run build
 # Use a minimal Node.js image for running the project
 FROM node:20-alpine AS release
 
+# Install system dependencies required for Chromium
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    && rm -rf /var/cache/apk/*
+
+# Set environment variables for Chromium
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 # Set the working directory
 WORKDIR /app
 
@@ -31,9 +46,6 @@ COPY --from=builder /app/package-lock.json ./package-lock.json
 
 # Install production dependencies
 RUN npm ci --ignore-scripts --omit=dev
-
-# install chromium
-RUN npx playwright install chromium
 
 # Set the command to run the server
 ENTRYPOINT ["node", "dist/index.js"]
