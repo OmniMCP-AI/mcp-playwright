@@ -32,5 +32,8 @@ COPY --from=builder /app/package-lock.json ./package-lock.json
 # Install production dependencies
 RUN npm ci --ignore-scripts --omit=dev
 
+# install chromium
+RUN npx playwright install chromium
+
 # Set the command to run the server
 ENTRYPOINT ["node", "dist/index.js"]
