@@ -18,18 +18,40 @@ COPY tsconfig.json ./
 # Build the project
 RUN npm run build
 
-# Use a minimal Node.js image for running the project
-FROM node:20-alpine AS release
+# Use Ubuntu-based image for better browser support
+FROM node:20-bullseye AS release
 
 # Install system dependencies required for browsers
-RUN apk add --no-cache \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
     ca-certificates \
-    ttf-freefont \
-    && rm -rf /var/cache/apk/*
+    procps \
+    libxss1 \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libxshmfence1 \
+    libgtk-3-0 \
+    libx11-xcb1 \
+    libxcb-dri3-0 \
+    libxss1 \
+    libgconf-2-4 \
+    libasound2 \
+    libatspi2.0-0 \
+    libdrm2 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libxshmfence1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
 WORKDIR /app
